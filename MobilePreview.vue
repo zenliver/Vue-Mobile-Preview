@@ -1,12 +1,15 @@
-<!-- 通用手机预览组件 - by ZHJ - ver: 20190605 -->
+<!-- 通用手机预览组件 - by ZHJ - ver: 20190618 -->
 <!--
 props:
+type: 预览类型 (type: String, 取值为 'iframe'，'content')
 url: 需要预览的页面的url（type: String）
+content: 需要预览的内容的HTML代码（type: String）
+showTopBar: 是否显示顶部导航栏（type: Boolean）
 -->
 
 <template lang="html">
   <div class="mobile_preview_component">
-    <div class="mobile_preview_top_bar clearfix">
+    <div class="mobile_preview_top_bar clearfix" v-if="showTopBar">
       <div class="mobile_preview_top_bar_back left" @click="goBack">返回</div>
       <div class="mobile_preview_top_bar_dots right">
         <span></span>
@@ -14,16 +17,26 @@ url: 需要预览的页面的url（type: String）
         <span></span>
       </div>
     </div>
-    <iframe :src="url" width="360" height="610"></iframe>
+    <iframe class="mobile_preview_iframe" :class="{'no_top_bar': !showTopBar}" :src="url" width="360" height="610" v-if="type === 'iframe'"></iframe>
+    <div class="mobile_preview_content" :class="{'no_top_bar': !showTopBar}" v-html="content" v-if="type === 'content'"></div>
   </div>
 </template>
 
 <script>
   export default {
     props: {
+      type: {
+        type: String
+      },
       url: {
         type: String
       },
+      content: {
+        type: String
+      },
+      showTopBar: {
+        type: Boolean
+      }
     },
     methods: {
       goBack() {
@@ -67,6 +80,7 @@ url: 需要预览的页面的url（type: String）
     &:before {
       content: "";
       display: block;
+      box-sizing: border-box;
       width: 60px;
       height: 6px;
       background-color: #555;
@@ -77,9 +91,10 @@ url: 需要预览的页面的url（type: String）
     }
     &:after {
       display: block;
+      box-sizing: border-box;
       content: "";
-      width: 26px;
-      height: 26px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       position: absolute;
       bottom: 7px;
@@ -131,11 +146,45 @@ url: 需要预览的页面的url（type: String）
       }
     }
 
-    iframe {
+    .mobile_preview_iframe, .mobile_preview_content {
       display: block;
       border: none;
       background-color: #fff;
+      height: 610px;
     }
+
+    .mobile_preview_iframe {
+      &.no_top_bar {
+        height: 650px !important;
+      }
+    }
+
   }
 
+</style>
+
+<style lang="scss">
+
+  .mobile_preview_component {
+    .mobile_preview_content {
+      line-height: normal;
+      overflow-y: scroll;
+      &.no_top_bar {
+        height: 650px !important;
+      }
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+      video {
+        max-width: 100%;
+        max-height: 200px;
+      }
+      audio {
+        max-width: 100%;
+        max-height: 80px;
+      }
+    }
+
+  }
 </style>
